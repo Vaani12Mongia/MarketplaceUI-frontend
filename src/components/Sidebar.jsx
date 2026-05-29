@@ -110,11 +110,11 @@ export default function Sidebar() {
     </NavLink>
   </li>
 
-  <li className="nav-item">
+  {/* <li className="nav-item">
     <NavLink to="/app/brand-guidelines" className={({ isActive }) => isActive ? 'active' : ''}>
       <span className="nav-icon">📋</span> Brand Guidelines
     </NavLink>
-  </li>
+  </li> */}
 
   <li className="nav-item">
     <NavLink to="/app/prompt-override" className={({ isActive }) => isActive ? 'active' : ''}>

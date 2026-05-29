@@ -1,7 +1,8 @@
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import aionosDarkLogo from '../assets/Aionos Dark logo.svg'
 
-const nav = ["Home", "Solution", "Features", "Impact", "Future", "Contact" ];
+const nav = ["Home", "Solution", "Features", "Impact", "Future" ];
 
 const problems = [
   ["⏰", "Delayed Notifications", "Passengers receive updates too late, missing critical rebooking windows."],
@@ -47,8 +48,74 @@ const future = [
   ["🌍", "Multi-Language Support", "Communicate with passengers in their preferred language, globally."],
 ];
 
+const faqs = [
+  {
+    question: 'What does this platform do?',
+    answer:
+      'This platform helps airlines automatically manage passenger communication during flight delays and cancellations using AI-powered real-time event handling.',
+  },
+  {
+    question: 'How are passengers notified during disruptions?',
+    answer:
+      'Passengers receive instant updates and travel assistance through automated communication workflows triggered by operational events such as delays or cancellations.',
+  },
+  {
+    question: 'Can the system automate disruption management workflows?',
+    answer:
+      'Yes. The platform automates disruption detection, passenger notifications, delay handling, cancellation workflows, and recovery communication with minimal manual intervention.',
+  },
+  {
+    question: 'Does the platform work in real time?',
+    answer:
+      'Yes. The system continuously monitors operational events and instantly responds with intelligent, context-aware communication flows.',
+  },
+  {
+    question: 'Is the platform scalable for enterprise airline operations?',
+    answer:
+      'Yes. The platform is built on scalable cloud infrastructure using Microsoft Azure AI services and event-driven architecture to support large-scale airline operations efficiently.',
+  },
+];
+
 const Index = () => {
   const navigate = useNavigate()
+  const [contactForm, setContactForm] = useState({ name: '', query: '' })
+  const [contactStatus, setContactStatus] = useState({ type: '', message: '' })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const contactStatusTimer = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (contactStatusTimer.current) {
+        clearTimeout(contactStatusTimer.current)
+      }
+    }
+  }, [])
+
+  const handleContactChange = (event) => {
+    const { name, value } = event.target
+    setContactForm((current) => ({ ...current, [name]: value }))
+  }
+
+  const handleContactSubmit = (event) => {
+    event.preventDefault()
+    setIsSubmitting(true)
+    setContactStatus({ type: '', message: '' })
+
+    if (contactStatusTimer.current) {
+      clearTimeout(contactStatusTimer.current)
+    }
+
+    setContactStatus({
+      type: 'success',
+      message: 'Your query has been sent successfully.',
+    })
+    setContactForm({ name: '', query: '' })
+    setIsSubmitting(false)
+    contactStatusTimer.current = setTimeout(() => {
+      setContactStatus({ type: '', message: '' })
+    }, 5000)
+  }
+
   return (
     <div>
       <header className="header">
@@ -216,7 +283,38 @@ const Index = () => {
       </div>
     </section>
 
-    <section id="contact">
+    <section id="faqs">
+      <div className="container">
+        <div className="section-head">
+          <p className="eyebrow">FAQS</p>
+          <h2 className="h2">Frequently Asked Questions</h2>
+          <p className="lead">Find quick answers about AirAlert AI and how it supports airline operations.</p>
+        </div>
+        <div className="faq-grid" style={{ marginTop: 56 }}>
+          <div className="faq-intro">
+            <p className="eyebrow">Helpful Information</p>
+            <h3>Clear answers for airline teams and stakeholders</h3>
+            <p>
+              These answers cover the core capabilities of the platform, including disruption handling,
+              passenger communication, and cloud scalability.
+            </p>
+            <p className="faq-support">
+              For any more questions or doubts, contact at <a href="mailto:support@aionos.ai">support@aionos.ai</a>.
+            </p>
+          </div>
+          <div className="faq-list">
+            {faqs.map((faq, index) => (
+              <details key={faq.question} className="faq-item" open={index === 0}>
+                <summary>{faq.question}</summary>
+                <p>{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* <section id="contact">
       <div className="container">
         <div className="section-head">
           <p className="eyebrow">Get In Touch</p>
@@ -225,33 +323,41 @@ const Index = () => {
         </div>
         <div className="contact-list" style={{ marginTop: 32 }}>
           <div className="contact-card contact-form">
-            <form onSubmit={(e) => { e.preventDefault(); alert('Thanks — we\'ll get back to you about your query soon.'); }}>
+            {contactStatus.message ? (
+              <div className={`toast ${contactStatus.type === 'success' ? 'toast-success' : ''}`} style={{ position: 'static', marginBottom: 20, width: '100%', maxWidth: '100%' }}>
+                <div className="toast-message">{contactStatus.message}</div>
+                <button className="toast-close" type="button" aria-label="Dismiss" onClick={() => setContactStatus({ type: '', message: '' })}>×</button>
+              </div>
+            ) : null}
+
+            <form onSubmit={handleContactSubmit}>
               <div className="form-group">
                 <label htmlFor="contact-name">Name</label>
-                <input id="contact-name" name="name" type="text" placeholder="Your name" required />
+                <input id="contact-name" name="name" type="text" placeholder="Your name" value={contactForm.name} onChange={handleContactChange} required />
               </div>
 
               <div className="form-group">
                 <label htmlFor="contact-query">Your Query</label>
-                <textarea id="contact-query" name="query" placeholder="Write your question or message here" required />
+                <textarea id="contact-query" name="query" placeholder="Write your question or message here" value={contactForm.query} onChange={handleContactChange} required />
               </div>
 
               <div className="modal-actions">
-                <button className="btn-primary" type="submit">Send Message</button>
+                <button className="btn-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Send Message'}</button>
               </div>
             </form>
           </div>
         </div>
       </div>
-    </section>
+    </section> */}
 
     <footer className="footer">
       <div className="container footer-inner">
         <span className="logo">
           <img src={aionosDarkLogo} alt="Aionos" className="wordmark" />
         </span>
-        <nav className="footer-nav" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <a href="/privacy">Privacy Policy</a>
+        <nav className="footer-nav">
+          <a className="status-nav-link" href="/privacy">Privacy Policy</a>
+          <a className="status-nav-link" href="/status">Status</a>
         </nav>
         <p className="copy">© 2026 Aviation Disruption Resiliency. All rights reserved.</p>
       </div>

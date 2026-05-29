@@ -64,13 +64,13 @@ export default function Dashboard() {
       </div>
 
       <div className="dash-grid">
-        <Link to="/brand-guidelines" className="dash-card">
+        {/* <Link to="/brand-guidelines" className="dash-card">
           <div className="dash-card-icon purple">📋</div>
           <h3>Brand Guidelines</h3>
           <p>Upload and manage your brand documents</p>
           <div className="dash-card-stat">{brandCount}</div>
           <div className="dash-card-stat-label">Documents</div>
-        </Link>
+        </Link> */}
 
         <Link to="/prompt-override" className="dash-card">
           <div className="dash-card-icon green">✎</div>
@@ -92,10 +92,10 @@ export default function Dashboard() {
       <div className="card quick-summary">
         <h2>Quick Summary</h2>
         <div className="summary-grid">
-          <div className="summary-item">
+          {/* <div className="summary-item">
             <div className="number">{brandCount}</div>
             <div className="label">Brand Documents</div>
-          </div>
+          </div> */}
           <div className="summary-item">
             <div className="number">{promptCount}</div>
             <div className="label">Custom Prompts</div>

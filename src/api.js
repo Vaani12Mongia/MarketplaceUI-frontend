@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE;
+const STATUS_ENDPOINT = import.meta.env.VITE_STATUS_ENDPOINT || '/api/status/live';
 
 function getSession() {
   try { return JSON.parse(sessionStorage.getItem('tenant_session') || 'null') } catch { return null }
@@ -38,14 +39,53 @@ async function authRequest(path, payload) {
   return body
 }
 
+async function statusRequest() {
+  const response = await fetch(STATUS_ENDPOINT, {
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  if (!response.ok) {
+    let message = 'Failed to load status'
+    try {
+      const errorBody = await response.json()
+      message = errorBody?.detail || message
+    } catch {
+      message = response.statusText || message
+    }
+    throw new Error(message)
+  }
+
+  return response.json()
+}
+
+async function azureStatusRequest() {
+  const response = await fetch('/api/azure-status', {
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  if (!response.ok) {
+    let message = 'Failed to load Azure status'
+    try {
+      const errorBody = await response.json()
+      message = errorBody?.detail || message
+    } catch {
+      message = response.statusText || message
+    }
+    throw new Error(message)
+  }
+
+  return response.json()
+}
+
 export const api = {
   login: (payload) => authRequest('/auth/login', payload),
   register: (payload) => authRequest('/auth/register', payload),
   logout: (payload) => authRequest('/auth/logout', payload),
+  submitContactQuery: (payload) => request('/contact', { method: 'POST', body: JSON.stringify(payload) }),
 
   getDashboardSummary: () => request('/dashboard-summary'),
 
-  listBrandGuidelines: () => request('/brand-guidelines'),
+  // listBrandGuidelines: () => request('/brand-guidelines'),
   createBrandGuideline: (payload) => request('/brand-guidelines', { method: 'POST', body: JSON.stringify(payload) }),
   updateBrandGuideline: (id, payload) => request(`/brand-guidelines/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
   deleteBrandGuideline: (id) => request(`/brand-guidelines/${id}`, { method: 'DELETE' }),
@@ -66,4 +106,22 @@ export const api = {
 
   getSystemPrompt: () => request('/system-prompt'),
   listAgents: () => request('/agents'),
+
+  getLiveStatus: () => statusRequest(),
+  getAzureStatus: () => azureStatusRequest(),
+  // Call backend health endpoint directly (no API_BASE prefix) to match other status calls
+  getHealthStatus: async () => {
+    const response = await fetch('/api/health', { headers: { 'Content-Type': 'application/json' } })
+    if (!response.ok) {
+      let message = 'Failed to load health status'
+      try {
+        const errorBody = await response.json()
+        message = errorBody?.detail || message
+      } catch {
+        message = response.statusText || message
+      }
+      throw new Error(message)
+    }
+    return response.json()
+  },
 }
