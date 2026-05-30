@@ -85,7 +85,6 @@ export const api = {
 
   getDashboardSummary: () => request('/dashboard-summary'),
 
-  // listBrandGuidelines: () => request('/brand-guidelines'),
   createBrandGuideline: (payload) => request('/brand-guidelines', { method: 'POST', body: JSON.stringify(payload) }),
   updateBrandGuideline: (id, payload) => request(`/brand-guidelines/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
   deleteBrandGuideline: (id) => request(`/brand-guidelines/${id}`, { method: 'DELETE' }),
@@ -109,7 +108,12 @@ export const api = {
 
   getLiveStatus: () => statusRequest(),
   getAzureStatus: () => azureStatusRequest(),
-  // Call backend health endpoint directly (no API_BASE prefix) to match other status calls
+
+  // Gateway Key (APIM subscription)
+  getGatewaySubscription: (tenantId) => request(`/gateway/subscription?tenantId=${tenantId}`),
+  requestGatewayKey: (payload) => request('/gateway/request', { method: 'POST', body: JSON.stringify(payload) }),
+  approveGatewayKey: (tenantId) => request('/gateway/approve', { method: 'POST', body: JSON.stringify({ tenantId }) }),
+
   getHealthStatus: async () => {
     const response = await fetch('/api/health', { headers: { 'Content-Type': 'application/json' } })
     if (!response.ok) {
